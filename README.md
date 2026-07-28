@@ -109,6 +109,30 @@ ai-code-assistant-landing-page/
 │   └── main.tsx              # React DOM render entry
 ├── PRD.md                    # Product Requirements Document
 ├── TRD.md                    # Technical Requirements Document
+├── FUTURE_UPGRADES.md        # Architectural Roadmap & Planned Features
 ├── package.json              # Frontend npm dependencies
 └── vite.config.ts            # Vite build configuration
 ```
+
+---
+
+## Documentation Index
+
+For comprehensive product and technical specifications, refer to the following repository documents:
+- 📄 **[PRD.md](./PRD.md)**: Product Requirements Document detailing user personas, business objectives, functional features, NFRs, and product KPIs.
+- ⚙️ **[TRD.md](./TRD.md)**: Technical Requirements Document covering system architecture, database schemas, API specs, auth workflows, and deployment pipelines.
+- 🚀 **[FUTURE_UPGRADES.md](./FUTURE_UPGRADES.md)**: Product Roadmap and future feature expansion plan including live LLM streaming, IDE extensions, team collaboration, and Stripe billing.
+
+---
+
+## License
+
+This repository is distributed under the MIT License. See [`LICENSE`](./LICENSE) for more details.
+
+---
+
+## Contact & Support
+
+For questions, feature requests, or technical support:
+- **Repository**: [mhassan-ali/ai-code-helper](https://github.com/mhassan-ali/ai-code-helper)
+- **Author**: Hassan Ali ([@mhassan-ali](https://github.com/mhassan-ali))
