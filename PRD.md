@@ -90,3 +90,63 @@ CodePilot AI bridges the gap between complex source code and developer understan
 - **Action Mode Selector**: Tabbed mode selection for Fix, Explain, and Optimize actions.
 - **Structured Output Display**: Clean markdown/code formatted response viewer with one-click copy functionality.
 - **Responsive Layout**: Collapsible desktop sidebar and drawer mobile navigation.
+
+---
+
+# 5. User Journeys & Workflow Specifications
+
+## 5.1 Onboarding & Registration Journey
+1. **Landing Page Visit**: User arrives on landing page, views hero showcase, features, and pricing.
+2. **Account Creation**: User clicks "Get Started Free" -> Navigates to `/signup`.
+3. **Validation & Hashing**: Form submits email/password to `POST /auth/signup`. Password is salted and hashed via bcrypt.
+4. **Auto-Authentication**: System creates user record, generates JWT, logs user in, and redirects to `/dashboard`.
+
+## 5.2 Code Analysis & Assistance Journey
+1. **Dashboard Navigation**: User opens `/dashboard`.
+2. **Code Input**: User pastes broken or legacy code snippet into the CodeInput editor.
+3. **Action Selection**: User selects action mode (Fix Code, Explain Code, or Optimize Code).
+4. **Execution**: User clicks "Run Assistant". The frontend dispatches authenticated request with Bearer JWT token to `/ai/fix`, `/ai/explain`, or `/ai/optimize`.
+5. **Result Display**: OutputBox streams/renders the result with clear syntax highlighting, line explanations, or optimized code refactoring.
+
+---
+
+# 6. Non-Functional Requirements (NFRs)
+
+## 6.1 Performance & Latency
+- **API Response Time**: AI endpoint responses returned in $<500\text{ ms}$ for mock heuristics, and $<2\text{ s}$ for streaming LLM calls.
+- **Frontend Load Time**: Initial Page Load (FCP) $<1.2\text{ s}$ on standard broadband connections.
+
+## 6.2 Availability & Reliability
+- **Uptime Target**: $99.9\%$ SLA for API availability.
+- **Graceful Degraded Mode**: Automatic fallback error messaging if backend service is unreachable.
+
+## 6.3 Scalability
+- **Horizontal Scaling**: Stateless FastAPI application architecture ready for containerization (Docker, Kubernetes).
+- **Database Scaling**: SQLAlchemy ORM layer abstracting SQLite for zero-downtime migration to PostgreSQL in production environments.
+
+---
+
+# 7. User Interface & Experience Design System
+
+## 7.1 Design Philosophy & Aesthetics
+- **Theme**: Premium dark mode with vibrant accent highlights (indigo, cyan, violet).
+- **Typography**: Modern geometric sans-serif fonts (Inter, System UI) with monospace fonts for code blocks.
+- **Micro-Interactions**: Hover transformations, glassmorphism cards, glowing borders, and Framer Motion smooth transitions.
+
+## 7.2 Core Component Library
+- **Navbar & Navigation**: Sticky blur navbar with dynamic state (logged in vs logged out).
+- **Hero & Feature Showcase**: Animated code tabs and glowing background elements.
+- **Dashboard Sidebar & Mobile Drawer**: Collapsible navigation tree with active route highlighting.
+
+---
+
+# 8. Security, Compliance & Data Privacy
+
+## 8.1 Data Protection & Privacy
+- **Code Privacy**: Submitted code snippets are processed strictly in-memory during request lifecycle and never persisted to public datasets without user permission.
+- **Encryption in Transit**: Mandatory TLS 1.3 (HTTPS) for all frontend-backend communications.
+
+## 8.2 Authentication & Authorization Security
+- **Password Safety**: Passwords hashed using bcrypt with salt rounds $\ge 12$.
+- **Token Security**: JWT tokens signed using HS256 algorithm with configurable expiration time (e.g. 24 hours).
+- **CORS Policies**: Explicit origin restrictions configured in FastAPI middleware to prevent unauthorized cross-origin requests.
