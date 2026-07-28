@@ -150,3 +150,65 @@ CodePilot AI bridges the gap between complex source code and developer understan
 - **Password Safety**: Passwords hashed using bcrypt with salt rounds $\ge 12$.
 - **Token Security**: JWT tokens signed using HS256 algorithm with configurable expiration time (e.g. 24 hours).
 - **CORS Policies**: Explicit origin restrictions configured in FastAPI middleware to prevent unauthorized cross-origin requests.
+
+---
+
+# 9. Success Metrics & Key Performance Indicators (KPIs)
+
+## 9.1 Developer Engagement & Activation
+- **Monthly Active Users (MAU)**: Target $10,000+$ active developers within 6 months.
+- **Daily Active Code Operations**: Target $50,000+$ code fixes/explanations generated per day.
+- **Retention Rate**: Day-30 user retention rate target $>45\%$.
+
+## 9.2 Technical Quality & Satisfaction Metrics
+- **Fix Acceptance Rate**: $>88\%$ of suggested code fixes applied directly by users.
+- **User Satisfaction (CSAT)**: $>4.8 / 5.0$ rating based on developer feedback surveys.
+- **Error Rate**: API error rate maintained $<0.05\%$.
+
+---
+
+# 10. Assumptions, Dependencies & Risks
+
+## 10.1 Key Assumptions
+- Developers require cross-language code assistance (JavaScript, TypeScript, Python, Go, Rust, Java, C++).
+- Latency and speed of AI responses directly impact user satisfaction.
+
+## 10.2 Technical & Business Dependencies
+- React 19 / Vite 7 frontend ecosystem and TailwindCSS 4 styling modules.
+- FastAPI python backend runtime with Uvicorn worker process.
+- External LLM provider API availability (OpenAI, Anthropic, or Google Gemini) for live model integration.
+
+## 10.3 Risk Mitigation Matrix
+| Risk Factor | Impact | Likelihood | Mitigation Strategy |
+| :--- | :--- | :--- | :--- |
+| LLM API Rate Limiting | High | Medium | Implement Redis token bucket rate limiters and backend fallback models |
+| Security Leak of User Code | Critical | Low | Zero data persistence on processing servers; TLS 1.3 strict enforcement |
+| Latency Spikes during peak | Medium | Medium | Async non-blocking requests and stream responses via WebSockets |
+
+---
+
+# 11. Release Strategy & Milestones
+
+## 11.1 Phase 1 — Core MVP (Current Version)
+- Fully functional React 19 + Vite + Tailwind landing page and authentication dashboard.
+- FastAPI backend with JWT user management and AI code processing mock engine.
+- Complete SQLite relational database storage.
+
+## 11.2 Phase 2 — Production LLM Integration
+- Integration of live Google Gemini / OpenAI GPT-4o streaming APIs.
+- Enterprise user role RBAC and subscription tier enforcement via Stripe.
+
+## 11.3 Phase 3 — IDE Extension & Team Hub
+- Release of VS Code and JetBrains IDE extensions connecting directly to CodePilot backend.
+- Shared team code snippets and collaborative workspace review rooms.
+
+---
+
+# 12. Appendix & Glossary
+
+## 12.1 Glossary of Terms
+- **JWT (JSON Web Token)**: Standardized open method for representing claims securely between two parties.
+- **FastAPI**: Modern, fast (high-performance) web framework for building APIs with Python.
+- **Bcrypt**: Password-hashing function based on the Blowfish cipher.
+- **Framer Motion**: Production-ready motion library for React.
+- **MTTR**: Mean Time To Resolution — average time taken to resolve a code bug or issue.
