@@ -152,3 +152,82 @@ The backend relies on SQLAlchemy ORM managing SQLite database tables.
 ### `POST /ai/optimize`
 - **Request Body**: `{"code": "for(let i=0; i<arr.length; i++) { ... }"}`
 - **Response `200 OK`**: Algorithmic complexity reduction and optimized code output.
+
+---
+
+# 5. Authentication & Authorization Mechanism
+
+## 5.1 Password Hashing & Verification
+- Uses **bcrypt** with custom salt generation:
+  - `pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")`
+  - Function `get_password_hash(password: str) -> str` returns salted hash.
+  - Function `verify_password(plain_password: str, hashed_password: str) -> bool` verifies credentials against hash.
+
+## 5.2 JSON Web Token (JWT) Lifecycle
+- Signature Algorithm: **HS256**
+- Secret Key: Configurable environment secret key (`SECRET_KEY`).
+- Token Claims: `sub` (subject containing user email or ID) and `exp` (expiration timestamp).
+- Dependency Injection: FastAPI `OAuth2PasswordBearer(tokenUrl="auth/login")` extracts Bearer tokens automatically from `Authorization` header.
+
+---
+
+# 6. AI Engine Integration & Processing Pipeline
+
+## 6.1 Modular Processing Architecture
+The AI processing pipeline currently relies on structured AST/regex heuristics and pattern matchers designed for high-speed local processing.
+
+```
+       Raw Code Payload (POST /ai/fix|explain|optimize)
+                             |
+                             v
+               +---------------------------+
+               | JWT Dependency Validation |
+               +-------------+-------------+
+                             |
+                             v
+               +---------------------------+
+               | Regex Heuristics Engine   |
+               | - Semicolon Injector      |
+               | - Strict Equality Checker |
+               | - Variable Declaration    |
+               +-------------+-------------+
+                             |
+                             v
+               +---------------------------+
+               | JSON Response Formatter   |
+               +---------------------------+
+```
+
+## 6.2 Extensibility for Production LLM Provider
+The AI route handlers (`backend/app/routes/ai.py`) are structured as pure python modules, allowing straightforward swap with real LLM provider SDKs (such as `google-genai` or `openai` client wrappers).
+
+---
+
+# 7. Frontend State Management & Component Architecture
+
+## 7.1 State Management Pattern
+- **AuthContext (`src/contexts/AuthContext.tsx`)**: Global React context managing current user state, token persistence in `localStorage`, login handler, signup handler, and logout logic.
+- **Local Component State**: Page-level and component-level state managing input code, selected tab mode, loading spinners, and error alerts.
+
+## 7.2 Key UI Component Boundaries
+- **Dashboard Workspace (`DashboardPage.tsx`)**:
+  - `<Sidebar />`: Navigation tree and quick actions.
+  - `<DashNavbar />`: Top header with user profile badge and logout button.
+  - `<CodeInput />`: Code editor textarea with character counter and mode selector tabs.
+  - `<OutputBox />`: Syntax-highlighted response block with copy-to-clipboard functionality.
+
+---
+
+# 8. Security & Error Handling Infrastructure
+
+## 8.1 HTTP Error Responses & Exception Handling
+FastAPI `HTTPException` triggers standard RFC-7807 error responses:
+- `400 Bad Request`: Email already registered / invalid format.
+- `401 Unauthorized`: Invalid credentials / expired JWT token.
+- `404 Not Found`: Requested endpoint or user record missing.
+- `500 Internal Server Error`: Unhandled backend runtime exception logged via FastAPI request logging middleware.
+
+## 8.2 CORS & Web Security
+- **Allowed Origins**: Strictly configured allowed origins list (`http://localhost:5173`, `http://127.0.0.1:5173`, etc.).
+- **Allowed Methods**: `GET`, `POST`, `OPTIONS`.
+- **Allowed Headers**: `Content-Type`, `Authorization`.
