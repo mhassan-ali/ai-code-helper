@@ -231,3 +231,64 @@ FastAPI `HTTPException` triggers standard RFC-7807 error responses:
 - **Allowed Origins**: Strictly configured allowed origins list (`http://localhost:5173`, `http://127.0.0.1:5173`, etc.).
 - **Allowed Methods**: `GET`, `POST`, `OPTIONS`.
 - **Allowed Headers**: `Content-Type`, `Authorization`.
+
+---
+
+# 9. Performance, Scalability & Rate Limiting
+
+## 9.1 Performance Benchmarks
+- **Uvicorn Concurrency**: Async event loop capable of handling 5,000+ non-blocking requests per second per core.
+- **Vite Production Bundling**: Optimized JS chunking with `vite-plugin-singlefile` or code-splitting for fast initial page load.
+
+## 9.2 Rate Limiting Strategy
+- **Token Bucket Rate Limiter**: Planned Redis-backed rate limiting per IP / authenticated user ID to prevent spamming AI endpoints (e.g. max 60 requests/minute for Free tier).
+
+---
+
+# 10. Development, Testing & CI/CD Pipeline
+
+## 10.1 Local Development Workflow
+- **Backend Launch**:
+  ```bash
+  cd backend
+  python -m venv venv
+  venv\Scripts\activate  # Windows
+  pip install -r requirements.txt
+  python main.py
+  ```
+- **Frontend Launch**:
+  ```bash
+  npm install
+  npm run dev
+  ```
+
+## 10.2 Quality Assurance & Testing Strategy
+- **Backend Tests**: `pytest` test suite verifying auth flow, JWT generation, and route status codes.
+- **Frontend Tests**: TypeScript static type checks (`tsc --noEmit`) and Vite production build test (`npm run build`).
+
+---
+
+# 11. Environment Configuration & Deployment
+
+## 11.1 Environment Variables
+| Variable Name | Default / Sample | Description |
+| :--- | :--- | :--- |
+| `SECRET_KEY` | `your-secret-key-keep-it-secret` | Cryptographic secret for signing JWTs |
+| `ALGORITHM` | `HS256` | JWT signing algorithm |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | `1440` (24h) | Token validity period |
+| `DATABASE_URL` | `sqlite:///./codepilot.db` | SQLAlchemy connection URI |
+
+## 11.2 Containerized & Cloud Deployment
+- **Docker Production Image**: Multi-stage Dockerfile bundling FastAPI backend and Vite static assets.
+- **Cloud Hosts**: Compatible with Render, Railway, Vercel (frontend static host), or AWS ECS.
+
+---
+
+# 12. Maintenance, Monitoring & Observability
+
+## 12.1 Logging Infrastructure
+- Structured HTTP request middleware logging incoming request methods, paths, client IPs, and status codes.
+- Error tracing for failed database queries and auth mismatches.
+
+## 12.2 Health Check Monitoring
+- Automated ping checks against `/health` endpoint to monitor service health and trigger automatic instance restarts if unresponsive.
