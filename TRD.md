@@ -1,0 +1,154 @@
+# Technical Requirements Document (TRD) — CodePilot AI
+
+---
+
+# 1. System Architecture Overview
+
+## 1.1 High-Level Architecture Diagram
+The **CodePilot AI** ecosystem follows a decoupled Client-Server architecture. The frontend is built as a single-page application (SPA) using React 19, Vite, and TypeScript, communicating over RESTful HTTP APIs with a high-performance Python FastAPI backend.
+
+```
+                    +--------------------------------------------------+
+                    |                Client Browser                    |
+                    |   (React 19 + TypeScript + Tailwind CSS v4)     |
+                    +------------------------+-------------------------+
+                                             |
+                                             | HTTP Requests (REST / JSON)
+                                             | Authorization: Bearer <JWT>
+                                             v
+                    +--------------------------------------------------+
+                    |             FastAPI Gateway Backend              |
+                    |             (Uvicorn ASGI Server)                |
+                    +-------------------+------------------------------+
+                                        |
+               +------------------------+------------------------+
+               |                                                 |
+               v                                                 v
+    +-----------------------+                         +-----------------------+
+    | Authentication Module |                         |   AI Assistant Module |
+    | (Bcrypt + Python-Jose)|                         |  (Fix, Explain, Opt)  |
+    +-----------+-----------+                         +-----------------------+
+                |
+                v
+    +-----------------------+
+    |   SQLAlchemy ORM      |
+    +-----------+-----------+
+                |
+                v
+    +-----------------------+
+    | SQLite Database       |
+    | (codepilot.db)        |
+    +-----------------------+
+```
+
+## 1.2 Architectural Principles
+- **Decoupled Architecture**: Independent frontend and backend deployments allowing separate scaling and maintenance.
+- **Stateless REST APIs**: Every API request contains necessary authentication state via JWT Bearer headers.
+- **Modularity & Scalability**: Clean separation of database models, authentication logic, route controllers, and AI services.
+
+---
+
+# 2. Tech Stack & Infrastructure Specification
+
+## 2.1 Frontend Stack
+- **Framework**: React 19 (`19.2.6`)
+- **Build Tool & Bundler**: Vite 7 (`7.3.2`) with `@vitejs/plugin-react`
+- **Language**: TypeScript (`5.9.3`)
+- **Styling & Design System**: TailwindCSS v4 (`4.1.17`), `clsx` (`2.1.1`), `tailwind-merge` (`3.4.0`)
+- **Animations**: Framer Motion (`12.42.2`)
+- **Icons**: Lucide React (`1.23.0`)
+- **Routing**: React Router DOM v7 (`7.18.1`)
+
+## 2.2 Backend Stack
+- **Framework**: FastAPI (`0.115.0`)
+- **ASGI Server**: Uvicorn (`0.30.6`)
+- **Database & ORM**: SQLite (`codepilot.db`) with SQLAlchemy (`2.0.35`)
+- **Authentication**: JWT via `python-jose[cryptography]` (`3.3.0`) and password hashing with `bcrypt` (`4.2.0`)
+- **Validation**: Pydantic v2 (`2.9.2`) with email validation support
+- **Form & Multipart Parser**: `python-multipart` (`0.0.12`)
+
+---
+
+# 3. Database Schema & Data Models
+
+## 3.1 Entity Relationship Diagram & Tables
+The backend relies on SQLAlchemy ORM managing SQLite database tables.
+
+### User Model Schema (`users` Table)
+| Field Name | Data Type | Constraints | Description |
+| :--- | :--- | :--- | :--- |
+| `id` | Integer | Primary Key, Auto Increment, Index | Unique identifier for user |
+| `email` | String(255) | Unique, Indexed, Not Null | User email address used for login |
+| `hashed_password` | String(255) | Not Null | Salted bcrypt hash of password |
+| `created_at` | DateTime | Default `utcnow` | Timestamp of account creation |
+
+## 3.2 Database Initialization Logic
+- Database connection managed via `sqlalchemy.create_engine("sqlite:///./codepilot.db")`.
+- `init_db()` is called during application lifespan startup to automatically generate table schemas if missing.
+
+---
+
+# 4. API Specification & Interface Contracts
+
+## 4.1 System & Health Check Endpoints
+### `GET /`
+- **Description**: Returns server metadata and running status.
+- **Response `200 OK`**:
+```json
+{
+  "message": "API is running",
+  "service": "CodePilot AI — Auth Service",
+  "version": "1.0.0"
+}
+```
+
+### `GET /health`
+- **Description**: Health monitoring check.
+- **Response `200 OK`**: `{"status": "healthy"}`
+
+## 4.2 Authentication Router (`/auth`)
+
+### `POST /auth/signup`
+- **Request Body**: `{"email": "dev@example.com", "password": "SecurePassword123"}`
+- **Response `200 OK`**:
+```json
+{
+  "access_token": "<jwt_string>",
+  "token_type": "bearer",
+  "user": {
+    "id": 1,
+    "email": "dev@example.com",
+    "created_at": "2026-07-28T18:00:00Z"
+  }
+}
+```
+
+### `POST /auth/login`
+- **Request Body**: `{"email": "dev@example.com", "password": "SecurePassword123"}`
+- **Response `200 OK`**: Same token structure as signup.
+
+### `GET /auth/me`
+- **Header Required**: `Authorization: Bearer <jwt_token>`
+- **Response `200 OK`**: `{"id": 1, "email": "dev@example.com", "created_at": "..."}`
+
+## 4.3 AI Router (`/ai`)
+
+### `POST /ai/fix`
+- **Request Body**: `{"code": "const x = 5\nconst y = 10"}`
+- **Response `200 OK`**:
+```json
+{
+  "success": true,
+  "action": "fix",
+  "result": "const x = 5;\nconst y = 10;",
+  "original_code": "const x = 5\nconst y = 10"
+}
+```
+
+### `POST /ai/explain`
+- **Request Body**: `{"code": "function add(a, b) { return a + b; }"}`
+- **Response `200 OK`**: Detailed line-by-line explanation response object.
+
+### `POST /ai/optimize`
+- **Request Body**: `{"code": "for(let i=0; i<arr.length; i++) { ... }"}`
+- **Response `200 OK`**: Algorithmic complexity reduction and optimized code output.
