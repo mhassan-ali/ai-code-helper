@@ -58,7 +58,7 @@ curl http://127.0.0.1:8000/auth/me \
 
 ## Request / Response Examples
 
-### POST /auth/signup
+### POST /auth/signup    
 ```json
 // Request
 {
