@@ -51,7 +51,7 @@ curl -X POST http://127.0.0.1:8000/auth/login \
 
 # Get current user (use token from login response)
 curl http://127.0.0.1:8000/auth/me \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+  -H "Authorization: Bearer YOUR_TOKEN_HERE   "
 ```
 
 ---
