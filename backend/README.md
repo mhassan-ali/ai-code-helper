@@ -69,7 +69,7 @@ curl http://127.0.0.1:8000/auth/me \
 // Response (201)
 {
   "success": true,
-  "message": "Account created successfully",
+  "message": "Account created successfully",     
   "token": "eyJhbGciOiJIUzI1NiIs...",
   "user": {
     "id": 1,
